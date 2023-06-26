@@ -6,7 +6,7 @@
 
 # MAGIC %md-sandbox ## 4.1 Machine Learning
 # MAGIC <div>
-# MAGIC   <img src="https://github.com/grandintegrator/gnn-db-blogpost/blob/main/media/ml-workflow.png?raw=True" alt="graph-training" width="840px", />
+# MAGIC   <img src="https://github.com/grandintegrator/gnn-db-blogpost/blob/main/media/ml-workflow.png?raw=True" alt="graph-training" width="100%", />
 # MAGIC </div>
 
 # COMMAND ----------

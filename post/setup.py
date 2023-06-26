@@ -7,7 +7,7 @@
 # COMMAND ----------
 
 # Graph machine learning:
-!pip install --quiet dgl==0.9.1 pyyaml
+%pip install --quiet dgl==0.9.1 pyyaml cleanco==2.2
 
 # COMMAND ----------
 
@@ -35,7 +35,9 @@ from typing import Dict, Any, List
 # !pip install dgl-cu113 dglgo -f https://data.dgl.ai/wheels/repo.html
 # !pip install dgl-cu113 dglgo -f https://data.dgl.ai/wheels/repo.html
 
+# deep graph libarary
 import dgl
+
 import numpy as np
 import torch
 import mlflow
