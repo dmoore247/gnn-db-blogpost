@@ -138,7 +138,3 @@ params = {
 
 simplefilter(action='ignore', category=UserWarning)
 simplefilter(action='ignore', category=FutureWarning)
-
-# COMMAND ----------
-
-
