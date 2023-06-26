@@ -15,10 +15,14 @@
 
 # COMMAND ----------
 
+import mlflow
+
+# COMMAND ----------
+
 # DBTITLE 1,Create notebook widgets for database name and dataset paths
 dbutils.widgets.text(name="catalog_name", defaultValue="gnn_blog", label="Catalog Name")
 dbutils.widgets.text(name="database_name", defaultValue="gnn_blog_db", label="Database Name")
-dbutils.widgets.text(name="experiment_name", defaultValue="Supply Chain GNN", label="experiment_name")
+dbutils.widgets.text(name="experiment_name", defaultValue="/Repos/douglas.moore@databricks.com/gnn-db-blogpost-dev/post/4. GNN Training", label="experiment_name")
 
 # COMMAND ----------
 
@@ -509,7 +513,7 @@ class GNNWrapper(mlflow.pyfunc.PythonModel):
 # COMMAND ----------
 
 # DBTITLE 1,We create a seperate mlflow run with the best parameters, log the model, and the t-SNE of the learned embeddings
-with mlflow.start_run(run_id=run_id, run_name="Supply Chain GNN") as run:
+with mlflow.start_run(run_name="Supply Chain GNN") as run:
   # Log the parameters of the model run
   mlflow.set_tag("link-prediction", "GraphSAGE")
   mlflow.log_params(best_parameters)
