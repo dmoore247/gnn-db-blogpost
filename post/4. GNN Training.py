@@ -26,6 +26,9 @@ dbutils.widgets.text(name="experiment_name", defaultValue="Supply Chain GNN", la
 catalog_name = dbutils.widgets.get("catalog_name")
 database_name = dbutils.widgets.get("database_name")
 experiment_name = dbutils.widgets.get("experiment_name")
+
+model_name = f"supply_gnn_model_{catalog_name}_{database_name}"
+
 mlflow.set_experiment(experiment_name)
 spark.sql(f"use {catalog_name}.{database_name};")
 
@@ -580,7 +583,7 @@ print(gnn_model_pyfunc.test())
 
 # COMMAND ----------
 
-mlflow.register_model('runs:/' + run_id + '/gnn_model', 'supply_gnn_model_ajmal_aziz')
+mlflow.register_model('runs:/' + run_id + '/gnn_model', model_name)
 
 # COMMAND ----------
 

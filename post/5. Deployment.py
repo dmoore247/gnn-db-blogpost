@@ -30,6 +30,7 @@ dbutils.widgets.text(name="database_name", defaultValue="gnn_blog_db", label="Da
 catalog_name = dbutils.widgets.get("catalog_name")
 database_name = dbutils.widgets.get("database_name")
 
+model_name = f"supply_gnn_model_{catalog_name}_{database_name}"
 _ = spark.sql(f"use {catalog_name}.{database_name};")
 
 # COMMAND ----------
@@ -38,7 +39,7 @@ _ = spark.sql(f"use {catalog_name}.{database_name};")
 from mlflow import MlflowClient
 
 client = MlflowClient()
-model_name = f"supply_gnn_model_{catalog_name}_{database_name}"
+
 model_version = int(client.get_latest_versions(model_name)[0].version)
 
 # Latest registered model
@@ -59,7 +60,7 @@ get_gnn_prediction = mlflow.pyfunc.spark_udf(spark, f"models:/{model_name}/produ
 
 # COMMAND ----------
 
-# MAGIC %md ### 5.2 Perform Batch Inferencing
+# MAGIC %md ## 5.2 Perform Batch Inferencing
 
 # COMMAND ----------
 
@@ -105,7 +106,7 @@ gold_relations.write.format("delta").mode("overwrite").saveAsTable("gold_relatio
 # COMMAND ----------
 
 # MAGIC %md-sandbox
-# MAGIC ## 5.2 Now we can go ahead and make our supply chain Dashboard!
+# MAGIC ## 5.3 Now we can go ahead and make our supply chain Dashboard!
 # MAGIC
 # MAGIC <div style="float:right">
 # MAGIC   <img src="https://github.com/grandintegrator/gnn-db-blogpost/blob/main/media/dashboard-1.png?raw=True" alt="graph-training" width="1000px"", />
