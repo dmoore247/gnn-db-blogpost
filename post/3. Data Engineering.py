@@ -34,7 +34,7 @@ dbutils.widgets.text(name="catalog_name", defaultValue="gnn_blog", label="Catalo
 data_path = dbutils.widgets.get("data_path")
 database_name = dbutils.widgets.get("database_name")
 catalog_name = dbutils.widgets.get("catalog_name")
-
+print(f"data_path: {data_path}, catalog_name:{catalog_name}, database_name:{database_name}")
 # Extract the zip files in the data directory into dbfs
 get_datasets_from_git(data_path=dbutils.widgets.get("data_path"))
 
