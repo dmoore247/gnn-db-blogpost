@@ -18,12 +18,14 @@
 # DBTITLE 1,Create notebook widgets for database name and dataset paths
 dbutils.widgets.text(name="catalog_name", defaultValue="gnn_blog", label="Catalog Name")
 dbutils.widgets.text(name="database_name", defaultValue="gnn_blog_db", label="Database Name")
+dbutils.widgets.text(name="run_id", defaultValue="", label="run_id")
 
 # COMMAND ----------
 
 # DBTITLE 1,Unzip data and choose a database for analysis
 catalog_name = dbutils.widgets.get("catalog_name")
 database_name = dbutils.widgets.get("database_name")
+run_id = dbutils.widgets.get("run_id")
 spark.sql(f"use {catalog_name}.{database_name};")
 
 # COMMAND ----------
@@ -503,7 +505,7 @@ class GNNWrapper(mlflow.pyfunc.PythonModel):
 # COMMAND ----------
 
 # DBTITLE 1,We create a seperate mlflow run with the best parameters, log the model, and the t-SNE of the learned embeddings
-with mlflow.start_run(run_name="Supply Chain GNN") as run:
+with mlflow.start_run(run_id=run_id, run_name="Supply Chain GNN") as run:
   # Log the parameters of the model run
   mlflow.set_tag("link-prediction", "GraphSAGE")
   mlflow.log_params(best_parameters)
