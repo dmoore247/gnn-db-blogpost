@@ -7,7 +7,7 @@
 # COMMAND ----------
 
 # Graph machine learning:
-!pip install --quiet dgl==0.9.1 pyyaml
+!pip install dgl==0.9.1 pyyaml
 
 # COMMAND ----------
 
