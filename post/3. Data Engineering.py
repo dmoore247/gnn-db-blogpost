@@ -1,6 +1,6 @@
 # Databricks notebook source
 # MAGIC %md 
-# MAGIC # 3. Implementation: Exploration and DE
+# MAGIC # 3. Implementation: Exploration and Data Engineering
 
 # COMMAND ----------
 
@@ -8,8 +8,13 @@
 # MAGIC <div style="float:right">
 # MAGIC   <img src="https://github.com/grandintegrator/gnn-db-blogpost/blob/main/media/step_1-2.png?raw=True" alt="graph-training" width="840px", />
 # MAGIC </div>
-# MAGIC 
+# MAGIC
 # MAGIC We begin by ingesting our streaming data using Autoloader and saving as a delta table. Additionally we read in CSV files from our internal teams and convert them to delta tables for more efficient querying.
+
+# COMMAND ----------
+
+# MAGIC %md ### Requirements
+# MAGIC Databricks ML Runtime with Unity Catalog Cluster
 
 # COMMAND ----------
 
@@ -154,7 +159,3 @@ display(spark.table("silver_relation_data"))
 
 # MAGIC %md
 # MAGIC Next, we will use this Silver data to train our GNN and refine the low likelihood links that we omitted going from Bronze to Silver. The GNN will be trained on relatively confident links in the next notbook.
-
-# COMMAND ----------
-
-

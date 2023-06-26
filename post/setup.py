@@ -1,9 +1,25 @@
 # Databricks notebook source
+# MAGIC %md ## Requires
+# MAGIC
+# MAGIC - Unity Catalog - Assigned (Power User) Compute
+# MAGIC - DBR  11.3 LTS ML
+
+# COMMAND ----------
+
+# Graph machine learning:
+!pip install --quiet dgl==0.9.1 pyyaml
+
+# COMMAND ----------
+
 # Library Imports
 import argparse
 import logging
 import yaml
 import tqdm 
+
+# COMMAND ----------
+
+
 try:
   import cleanco
 except ModuleNotFoundError:
@@ -11,9 +27,6 @@ except ModuleNotFoundError:
 import cleanco
 from warnings import simplefilter
 from typing import Dict, Any, List
-
-# Graph machine learning:
-!pip install dgl
 
 # Uncomment below if you want to run on GPU
 # !pip install -U spacy

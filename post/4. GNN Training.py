@@ -29,13 +29,15 @@ spark.sql(f"use {catalog_name}.{database_name};")
 # COMMAND ----------
 
 # MAGIC %md-sandbox
+# MAGIC
+# MAGIC ## 4.2 Training our Graph Neural Network
+# MAGIC
 # MAGIC <div style="float:right">
 # MAGIC   <img src="https://github.com/grandintegrator/gnn-db-blogpost/blob/main/media/training_GNNs.png?raw=True" alt="graph-training" width="840px", />
 # MAGIC </div>
-# MAGIC 
-# MAGIC ## 3.2 Training our Graph Neural Network
+# MAGIC
 # MAGIC We will train our GNN in the mini-batch setting since this format scales well as the number of nodes in the graph grow, this method of training is also referred to as stochastic training of GNNs. We will leverage a graph data loader class from dgl to facilitate the mini-batch training. Graph data loaders are task dependent. For link prediction, the GNN is trained on **edge batches**. If the task were node focused (node classification/regression) then the graph would be partitioned based on nodes and we would use a node data loader. 
-# MAGIC 
+# MAGIC
 # MAGIC Before creating the edge bunches, we partition the graph into a training, validation, and testing graph. For each of the graph splits we negatively sample negative edges (edges that do not exist within the current graph). The negative sampling scheme can get quite complex but we'll maintain a simple negative sampler for this blog. During training batches, a positive graph (actual set of connections) and a negative graph (from our negatively sampled edges) will be used to train the GNN. The GNN loss will incentivise the embeddings to score the likelihood of the negative edges as lower than real edges.
 
 # COMMAND ----------
@@ -137,11 +139,12 @@ def get_edge_dataloaders(graph_partitions: Dict[str, dgl.DGLGraph],
 # COMMAND ----------
 
 # MAGIC %md-sandbox
+# MAGIC ### 4.2.1 Defining the Graph Neural Network model
+# MAGIC
 # MAGIC <div style="float:right">
 # MAGIC   <img src="https://github.com/grandintegrator/gnn-db-blogpost/blob/main/media/architecture.png?raw=True" alt="graph-training" width="700px", />
 # MAGIC </div>
-# MAGIC 
-# MAGIC ### 3.2.1 Defining the Graph Neural Network model
+# MAGIC
 # MAGIC Our GNN model will consist of two GraphSAGE layers to generate node embeddings and will be trained using the edge data loaders we have defined above. The embeddings are then fed into a seperate (simple) neural network that will take as inputs the embeddings for source and destination nodes and provide a prediction for the likelihood of a link (binary classification). More formally, the neural network acts as \\( f: (\mathbf{h}_u, \mathbf{h}_v )\rightarrow z{_u}{_v} \\). All of the network weights are trained using a single loss function, either a binary cross entropy loss or a margin loss. During training and validation we collect pseudo-accuracy metrics like the loss and the ROC-AUC and use mlflow to track the metrics during training.
 
 # COMMAND ----------
@@ -257,7 +260,7 @@ graph_model
 # COMMAND ----------
 
 # MAGIC %md-sandbox
-# MAGIC ## 3.2.2 Training the Graph Neural Network
+# MAGIC ## 4.2.2 Training the Graph Neural Network
 # MAGIC The defined architecture's forward passes have been defined but the weights of the layers need to be trained. We define a training and validation scheme below to optimise the network weights but also use HyperOpt to search the wider design space. This includes searching the space parameters like the number of negative samples per positive sample, and the dimensionality of the number of node features for the GNN to name a few.
 
 # COMMAND ----------
@@ -367,7 +370,7 @@ def evaluate(trained_model: torch.nn.Module,
 # COMMAND ----------
 
 # MAGIC %md-sandbox
-# MAGIC ## 3.2.3 Searching the design space using HyperOpt
+# MAGIC ## 4.2.3 Searching the design space using HyperOpt
 
 # COMMAND ----------
 
@@ -460,10 +463,10 @@ else:
 # MAGIC <div style="float:right">
 # MAGIC   <img src="https://github.com/grandintegrator/gnn-db-blogpost/blob/main/media/logged_model.gif?raw=True" alt="graph-training" width="700px", />
 # MAGIC </div>
-# MAGIC 
-# MAGIC ### 3.3.3 Logging the GNN model into the model registry using mlflow
+# MAGIC
+# MAGIC ### 4.3.3 Logging the GNN model into the model registry using mlflow
 # MAGIC We will now take the parameters that were found with HyperOpt and create an mlflow run that will log a ```pyfunc``` flavour of our model along with a t-SNE plot of the learned embeddings. This can be viewed within the Experiments tab of Databricks. We notice that the embeddings form two large clusters. This shows **good learned embeddings!** since nodes that are connected should be clustered together and nodes that are not should be seperated. The decision boundary for the neural network will be simpler, can you see where the decision boundary would be? 
-# MAGIC 
+# MAGIC
 # MAGIC This gives us confidence to move this model to production and classify the low confidence links based on the GNN.
 
 # COMMAND ----------
@@ -569,7 +572,7 @@ print(gnn_model_pyfunc.test())
 # COMMAND ----------
 
 # MAGIC %md-sandbox
-# MAGIC ### 3.3.3 Finally, we register our model in the model registry
+# MAGIC ### 4.3.3 Finally, we register our model in the model registry
 # MAGIC This model will then be used for inference to refine our silver table. See [next notebook!](https://e2-demo-field-eng.cloud.databricks.com/?o=1444828305810485#notebook/2045410163884197)
 
 # COMMAND ----------
