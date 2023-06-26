@@ -18,14 +18,15 @@
 # DBTITLE 1,Create notebook widgets for database name and dataset paths
 dbutils.widgets.text(name="catalog_name", defaultValue="gnn_blog", label="Catalog Name")
 dbutils.widgets.text(name="database_name", defaultValue="gnn_blog_db", label="Database Name")
-dbutils.widgets.text(name="run_id", defaultValue="", label="run_id")
+dbutils.widgets.text(name="experiment_name", defaultValue="Supply Chain GNN", label="experiment_name")
 
 # COMMAND ----------
 
 # DBTITLE 1,Unzip data and choose a database for analysis
 catalog_name = dbutils.widgets.get("catalog_name")
 database_name = dbutils.widgets.get("database_name")
-run_id = dbutils.widgets.get("run_id")
+experiment_name = dbutils.widgets.get("experiment_name")
+mlflow.set_experiment(experiment_name)
 spark.sql(f"use {catalog_name}.{database_name};")
 
 # COMMAND ----------
