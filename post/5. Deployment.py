@@ -3,7 +3,7 @@
 # MAGIC ## 5.1 Deploying our GNN to continuously refine our candidate edges!
 # MAGIC
 # MAGIC <div style="float:right">
-# MAGIC   <img src="https://github.com/grandintegrator/gnn-db-blogpost/blob/main/media/step_3-3.png?raw=True" alt="graph-training" width="700px", />
+# MAGIC   <img src="https://github.com/grandintegrator/gnn-db-blogpost/blob/main/media/step_3-3.png?raw=True" alt="graph-training" width="100%", />
 # MAGIC </div>
 # MAGIC
 # MAGIC
@@ -30,8 +30,16 @@ dbutils.widgets.text(name="database_name", defaultValue="gnn_blog_db", label="Da
 catalog_name = dbutils.widgets.get("catalog_name")
 database_name = dbutils.widgets.get("database_name")
 
-model_name = f"supply_gnn_model_{catalog_name}_{database_name}"
+#model_name = f"supply_gnn_model_{catalog_name}_{database_name}"
+model_name = f"{catalog_name}.{database_name}.supply_gnn_model"
 _ = spark.sql(f"use {catalog_name}.{database_name};")
+
+# COMMAND ----------
+
+import mlflow
+
+# Use Unity Catalog Model Registry, model located under {catalog_name}.{database_name}
+mlflow.set_registry_uri("databricks-uc")
 
 # COMMAND ----------
 
@@ -40,10 +48,11 @@ from mlflow import MlflowClient
 
 client = MlflowClient()
 
-model_version = int(client.get_latest_versions(model_name)[0].version)
+#model_version = int(client.get_latest_versions(model_name)[0].version)
+model_version = 'Production'
 
 # Latest registered model
-registered_model = mlflow.pyfunc.load_model(model_uri=f"models:/{model_name}/{model_version}")
+registered_model = mlflow.pyfunc.load_model(model_uri=f"models:/{model_name}@{model_version}")
 
 # COMMAND ----------
 
@@ -51,12 +60,14 @@ registered_model = mlflow.pyfunc.load_model(model_uri=f"models:/{model_name}/{mo
 #                                                                               New stage
 #                                                    Previous version           |
 #                                                         |                     |
-client.transition_model_version_stage(model_name, model_version, stage="Production", archive_existing_versions=True)
+#client.transition_model_version_stage(model_name, model_version, stage="Production", archive_existing_versions=True)
+
+#Not supported for UC based models.
 
 # COMMAND ----------
 
 # DBTITLE 1,Create a UDF from the production version of our GNN model
-get_gnn_prediction = mlflow.pyfunc.spark_udf(spark, f"models:/{model_name}/production", env_manager="local")
+get_gnn_prediction = mlflow.pyfunc.spark_udf(spark, f"models:/{model_name}@{model_version}", env_manager="local")
 
 # COMMAND ----------
 
@@ -109,7 +120,7 @@ gold_relations.write.format("delta").mode("overwrite").saveAsTable("gold_relatio
 # MAGIC ## 5.3 Now we can go ahead and make our supply chain Dashboard!
 # MAGIC
 # MAGIC <div style="float:right">
-# MAGIC   <img src="https://github.com/grandintegrator/gnn-db-blogpost/blob/main/media/dashboard-1.png?raw=True" alt="graph-training" width="1000px"", />
+# MAGIC   <img src="https://github.com/grandintegrator/gnn-db-blogpost/blob/main/media/dashboard-1.png?raw=True" alt="graph-training" width="100%", />
 # MAGIC </div>
 
 # COMMAND ----------

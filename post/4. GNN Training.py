@@ -15,7 +15,7 @@
 
 # COMMAND ----------
 
-import mlflow
+
 
 # COMMAND ----------
 
@@ -26,15 +26,21 @@ dbutils.widgets.text(name="experiment_name", defaultValue="/Repos/douglas.moore@
 
 # COMMAND ----------
 
+import mlflow
+
+# COMMAND ----------
+
 # DBTITLE 1,Unzip data and choose a database for analysis
 catalog_name = dbutils.widgets.get("catalog_name")
 database_name = dbutils.widgets.get("database_name")
 experiment_name = dbutils.widgets.get("experiment_name")
 
-model_name = f"supply_gnn_model_{catalog_name}_{database_name}"
 
-mlflow.set_experiment(experiment_name)
 spark.sql(f"use {catalog_name}.{database_name};")
+
+# Use Unity Catalog Model Registry, model located under {catalog_name}.{database_name}
+mlflow.set_registry_uri("databricks-uc")
+mlflow.set_experiment(experiment_name)
 
 # COMMAND ----------
 
@@ -442,7 +448,7 @@ argmin = fmin(fn=train_and_evaluate_gnn,
             space=params_hyperopt,
             algo=tpe.suggest,
             max_evals=20,
-            trials=SparkTrials(parallelism=8))
+            trials=SparkTrials(parallelism=16))
 
 # COMMAND ----------
 
@@ -513,7 +519,7 @@ class GNNWrapper(mlflow.pyfunc.PythonModel):
 # COMMAND ----------
 
 # DBTITLE 1,We create a seperate mlflow run with the best parameters, log the model, and the t-SNE of the learned embeddings
-with mlflow.start_run(run_name="Supply Chain GNN") as run:
+with mlflow.start_run(run_name="Best Supply Chain GNN") as run:
   # Log the parameters of the model run
   mlflow.set_tag("link-prediction", "GraphSAGE")
   mlflow.log_params(best_parameters)
@@ -582,11 +588,12 @@ print(gnn_model_pyfunc.test())
 # COMMAND ----------
 
 # MAGIC %md-sandbox
-# MAGIC ### 4.3.3 Finally, we register our model in the model registry
+# MAGIC ## 4.3 Finally, we register our model in the model registry
 # MAGIC This model will then be used for inference to refine our silver table. See [next notebook!](https://e2-demo-field-eng.cloud.databricks.com/?o=1444828305810485#notebook/2045410163884197)
 
 # COMMAND ----------
 
+model_name = f"{catalog_name}.{database_name}.supply_gnn_model"
 mlflow.register_model('runs:/' + run_id + '/gnn_model', model_name)
 
 # COMMAND ----------

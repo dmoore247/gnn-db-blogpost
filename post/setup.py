@@ -11,6 +11,10 @@
 
 # COMMAND ----------
 
+dbutils.library.restartPython()
+
+# COMMAND ----------
+
 # Library Imports
 import argparse
 import logging

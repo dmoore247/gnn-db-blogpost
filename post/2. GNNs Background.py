@@ -36,7 +36,7 @@
 # MAGIC |---------------------------------------|-------------------------------------------------------------------------------------------------|------------------|----------|--------------------------|
 # MAGIC | **Graph Classification**                  | Classify whether or not a given protein structure for a drug will inhibit a bacterial infection | Protein Network  | Proteins | Bonds                    |
 # MAGIC | **Node Classification**                   | Identify whether or not a scientific paper is about diabetes                                    | Citation Network | Papers   | Citations between papers |
-# MAGIC | **Link Prediction (edge classification)** | Are two people friends?                                                                         | Social Network   | People   | Known friendships        |
+# MAGIC | **Link Prediction (edge classification)** | Provider Recommendation                                                                        | Professional Network   | People   | Known Provider-Patient Relationships        |
 # MAGIC
 # MAGIC <br> 
 # MAGIC
@@ -65,18 +65,6 @@
 # MAGIC ### 3.1 More specifics on Link Prediction
 # MAGIC
 # MAGIC The number of possible links in a graph is usually much larger than the total possible edges. This is particularly true in supply chain networks which scale-free characteristic [see here for further details](https://onlinelibrary.wiley.com/doi/10.1111/jbl.12283) due to having a hub-and-spoke model. This makes intuitive sense since one would expect large multinationals to be highly connect nodes within the graph with small companies grouped around them or having fewer connections. If we look at it more mathematically, the universal set of possible edges, \\(\mathcal{E}^U\\) is generally significantly larger than the actualised edges. The task of link prediction is therefore to discern whether a given edge between any nodes \\(u\\) and \\(v\\) are in \\(\mathcal{E}^U - \mathcal{E}\\). The set \\(\mathcal{E}^U - \mathcal{E}\\) is the set of edges that have not been captured when building \\(\mathcal{G}\\), or are edges that will present themselves in the future (e.g. when a new partnership between companies is formed).
-
-# COMMAND ----------
-
-# MAGIC %md-sandbox
-# MAGIC ## 4. Defining the overall model structure 
-# MAGIC <div style="float:right">
-# MAGIC <!--   <img src="files/ajmal_aziz/gnn-blog/architecture.png" alt="graph-training" width="700px", /> -->
-# MAGIC     <img src="https://github.com/grandintegrator/gnn-db-blogpost/blob/main/media/architecture.png?raw=True" alt="graph-training" width="700px", />
-# MAGIC </div>
-# MAGIC
-# MAGIC
-# MAGIC Our GNN model will consist of two GraphSAGE layers to generate node embeddings and will be trained using the edge data loaders we have defined above. The embeddings are then fed into a seperate (simple) neural network that will take as inputs the embeddings for source and destination nodes and provide a prediction for the likelihood of a link (binary classification). More formally, the neural network acts as \\( f: (\mathbf{h}_u, \mathbf{h}_v )\rightarrow z{_u}{_v} \\). All of the network weights are trained using a single loss function, either a binary cross entropy loss or a margin loss. During training and validation we collect pseudo-accuracy metrics like the loss and the ROC-AUC and use mlflow to track the metrics during training. The training will be mediated by [```dgl```](https://www.dgl.ai/) running a ```pytorch``` backend. During inference, the model is defined as ```pyfunc``` mlflow flavour.
 
 # COMMAND ----------
 

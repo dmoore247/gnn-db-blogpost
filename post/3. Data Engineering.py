@@ -45,6 +45,10 @@ _ = spark.sql(f"use {catalog_name}.{database_name};")
 
 # COMMAND ----------
 
+# MAGIC %fs ls dbfs:/FileStore/gnn_blog_data_dmoore/
+
+# COMMAND ----------
+
 full_data_path = f"dbfs:/FileStore/{data_path}/"
 
 # COMMAND ----------
